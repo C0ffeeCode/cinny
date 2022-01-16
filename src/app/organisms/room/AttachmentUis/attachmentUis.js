@@ -19,5 +19,9 @@ attachmentUis.set('file', {
   fullName: 'File',
   icon: FileIC,
 });
+attachmentUis.set('voiceMailRecorder', {
+  fullName: 'Voice mail',
+  component: VoiceMailRecorder,
+});
 
 export default attachmentUis;
