@@ -11,6 +11,11 @@ import { cryptoCallbacks } from './state/secretStorageKeys';
 
 global.Olm = require('@matrix-org/olm');
 
+// TODO
+function reverseAppUrl() {
+  return window.location.hostname.split('.').reverse().join('.');
+}
+
 // logger.disableAll();
 
 class InitMatrix extends EventEmitter {
@@ -49,6 +54,8 @@ class InitMatrix extends EventEmitter {
       lazyLoadMembers: true,
     });
     this.matrixClient.setGlobalErrorOnUnknownDevices(false);
+
+    this.setupPushGateway();
   }
 
   setupSync() {
@@ -95,6 +102,33 @@ class InitMatrix extends EventEmitter {
       window.localStorage.clear();
       window.location.reload();
     });
+  }
+
+  async setupPushGateway() {
+    const a = await this.matrixClient.getPushers();
+    if (a.pushers.find((p) => p.app_id === secret.deviceId)) {
+      console.log('Pusher already registered');
+      return;
+    }
+
+    // TODO: Replace this
+    const pushkey = 'https://ntfy.sh/[magic 😁]?up=1';
+
+    await this.matrixClient.setPusher({
+      app_id: `${reverseAppUrl()}.${secret.deviceId}`,
+      device_display_name: `Cinny (${secret.deviceId})`,
+      app_display_name: 'Cinny',
+      kind: 'http',
+      lang: 'en',
+      append: false,
+      data: {
+        format: 'event_id_only',
+        url: 'https://matrix.gateway.unifiedpush.org/_matrix/push/v1/notify',
+      },
+      pushkey,
+    });
+
+    console.log('Pusher registered, pushkey: ', pushkey);
   }
 }
 
