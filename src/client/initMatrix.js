@@ -11,11 +11,6 @@ import { cryptoCallbacks } from './state/secretStorageKeys';
 
 global.Olm = require('@matrix-org/olm');
 
-// TODO
-function reverseAppUrl() {
-  return window.location.hostname.split('.').reverse().join('.');
-}
-
 // logger.disableAll();
 
 class InitMatrix extends EventEmitter {
@@ -115,7 +110,7 @@ class InitMatrix extends EventEmitter {
     const pushkey = 'https://ntfy.sh/[magic 😁]?up=1';
 
     await this.matrixClient.setPusher({
-      app_id: `${reverseAppUrl()}.${secret.deviceId}`,
+      app_id: `${window.location.hostname.split('.').reverse().join('.')}.${secret.deviceId}`,
       device_display_name: `Cinny (${secret.deviceId})`,
       app_display_name: 'Cinny',
       kind: 'http',
